@@ -1,21 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
-import uuid  # بۆ دروستکردنی ناسنامەی تایبەت
+import uuid
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-# ========== داتاکان (خەزنی کاتی) ==========
-# پێکهاتەی فرۆشگا: {id, shop_name, showroom, company, phone, email, category, products: []}
-shops_db = []
-# پێکهاتەی کاڵا: {id, name, price, shop_id}
-products_db = []
+# ============================================================
+# داتاکان (خەزنی کاتی لە بیرگەدا)
+# ============================================================
+shops_db = []      # فرۆشگاکان: {id, shop_name, showroom, company, phone, email, category, address}
+products_db = []   # کاڵاکان: {id, name, price, shop_id}
 
-# زانیاری بەڕێوەبەر
 ADMIN_USER = "admin"
 ADMIN_PASS = "admin123"
 
-# پێناسەی کەتەگۆرییەکان بۆ نیشاندان
 CATEGORY_LABELS = {
     "ئەلکترۆنیات": "ئەلکترۆنیات",
     "کارەباییات": "کارەباییات",
@@ -23,20 +21,21 @@ CATEGORY_LABELS = {
     "کەلوپەل": "کەلوپەل"
 }
 
-# ========== ڕاوتەکانی گشتی (بەبێ چوونەژوورەوە) ==========
+# ============================================================
+# ڕاوتە گشتییەکان (بەبێ چوونەژوورەوە)
+# ============================================================
 @app.route('/')
 def index():
-    # هەموو کاڵاکان لەگەڵ ناوی فرۆشگا
-    all_prices = []
+    prices = []
     for p in products_db:
         shop = next((s for s in shops_db if s['id'] == p['shop_id']), None)
-        all_prices.append({
+        prices.append({
             'store_name': shop['shop_name'] if shop else 'نەزانراو',
             'item_name': p['name'],
             'category': shop['category'] if shop else 'نەزانراو',
             'price': p['price']
         })
-    return render_template('index.html', prices=all_prices)
+    return render_template('index.html', prices=prices)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -50,18 +49,16 @@ def register():
             'phone': request.form.get('phone'),
             'email': request.form.get('email'),
             'category': request.form.get('category'),
-            'address': request.form.get('address', ''),
-            'product_count': 0
+            'address': request.form.get('address', '')
         }
         shops_db.append(shop)
-        flash('فرۆشگاکە بە سەرکەوتووی تۆمارکرا!', 'success')
+        flash('فرۆشگا تۆمارکرا!', 'success')
         return redirect(url_for('login'))
     return render_template('register.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -69,9 +66,8 @@ def login():
             session['role'] = 'admin'
             session['username'] = username
             return redirect(url_for('admin_dashboard'))
-        else:
-            error = "ناوی بەکارهێنەر یان وشەی تێپەڕ هەڵەیە!"
-    return render_template('login.html', error=error)
+        flash('ناوی بەکارهێنەر یان وشەی تێپەڕ هەڵەیە!', 'error')
+    return render_template('login.html')
 
 
 @app.route('/logout')
@@ -81,7 +77,9 @@ def logout():
     return redirect(url_for('index'))
 
 
-# ========== ڕاوتەکانی بەڕێوەبەر (Admin) ==========
+# ============================================================
+# ڕاوتەکانی بەڕێوەبەر
+# ============================================================
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -92,8 +90,7 @@ def admin_login():
             session['username'] = username
             flash('بەخێربێیتەوە بەڕێوەبەر!', 'success')
             return redirect(url_for('admin_dashboard'))
-        else:
-            flash('ناوی بەکارهێنەر یان وشەی تێپەڕ هەڵەیە!', 'error')
+        flash('ناوی بەکارهێنەر یان وشەی تێپەڕ هەڵەیە!', 'error')
     return render_template('admin_login.html')
 
 
@@ -102,14 +99,14 @@ def admin_dashboard():
     if session.get('role') != 'admin':
         return redirect(url_for('admin_login'))
 
-    # ئامارەکان
+    # ئامارەکان بۆ کارتەکان
     stats = {
         'shops': len(shops_db),
         'products': len(products_db),
-        'users': len(shops_db)  # لەم وەشەنەدا هەر فرۆشگایەک وەک بەکارهێنەر دادەنرێت
+        'users': len(shops_db)
     }
 
-    # ژماردن کاڵا بۆ هەر فرۆشگایەک
+    # ژماردنی کاڵا بۆ هەر فرۆشگایەک
     for shop in shops_db:
         shop['product_count'] = sum(1 for p in products_db if p['shop_id'] == shop['id'])
 
@@ -146,7 +143,6 @@ def admin_compare():
         })
         items_dict[iname]['count'] += 1
 
-    # دیاریکردنی کەمترین و زۆرترین بۆ هەر کاڵایەک
     items_list = []
     for iname, data in items_dict.items():
         prices = data['prices']
@@ -171,7 +167,7 @@ def admin_shop(sid):
 
     shop = next((s for s in shops_db if s['id'] == sid), None)
     if not shop:
-        flash('فرۆشگاکە نەدۆزرایەوە!', 'error')
+        flash('فرۆشگا نەدۆزرایەوە!', 'error')
         return redirect(url_for('admin_dashboard'))
 
     products = [p for p in products_db if p['shop_id'] == sid]
@@ -190,7 +186,7 @@ def admin_add_product(sid):
 
     shop = next((s for s in shops_db if s['id'] == sid), None)
     if not shop:
-        flash('فرۆشگاکە نەدۆزرایەوە!', 'error')
+        flash('فرۆشگا نەدۆزرایەوە!', 'error')
         return redirect(url_for('admin_dashboard'))
 
     name = request.form.get('name')
@@ -205,14 +201,13 @@ def admin_add_product(sid):
         flash('نرخەکە دروست نییە!', 'error')
         return redirect(url_for('admin_shop', sid=sid))
 
-    new_product = {
+    products_db.append({
         'id': str(uuid.uuid4()),
         'name': name,
         'price': price,
         'shop_id': sid
-    }
-    products_db.append(new_product)
-    flash('کاڵا بە سەرکەوتووی زیادکرا!', 'success')
+    })
+    flash('کاڵا زیادکرا!', 'success')
     return redirect(url_for('admin_shop', sid=sid))
 
 
@@ -223,7 +218,7 @@ def admin_update_product(pid):
 
     product = next((p for p in products_db if p['id'] == pid), None)
     if not product:
-        flash('کاڵاکە نەدۆزرایەوە!', 'error')
+        flash('کاڵا نەدۆزرایەوە!', 'error')
         return redirect(url_for('admin_dashboard'))
 
     name = request.form.get('name')
@@ -251,7 +246,7 @@ def admin_delete_product(pid):
 
     product = next((p for p in products_db if p['id'] == pid), None)
     if not product:
-        flash('کاڵاکە نەدۆزرایەوە!', 'error')
+        flash('کاڵا نەدۆزرایەوە!', 'error')
         return redirect(url_for('admin_dashboard'))
 
     shop_id = product['shop_id']
@@ -262,7 +257,6 @@ def admin_delete_product(pid):
 
 @app.route('/market')
 def market():
-    # نمایش هەموو کاڵاکان لە بازاڕدا
     rows = []
     for p in products_db:
         shop = next((s for s in shops_db if s['id'] == p['shop_id']), None)
