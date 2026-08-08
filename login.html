@@ -2,12 +2,12 @@
 <html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>چوونەژوورەوەی بەڕێوەبەر</title>
+    <title>چوونەژوورەوە</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-        <h2 class="text-2xl font-bold text-center text-blue-900 mb-6">چوونەژوورەوەی داشبۆردی بەڕێوەبەر</h2>
+        <h2 class="text-2xl font-bold text-center text-blue-900 mb-6">چوونەژوورەوە بۆ سیستەم</h2>
         {% if error %}
         <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm">{{ error }}</div>
         {% endif %}
@@ -22,8 +22,9 @@
             </div>
             <button type="submit" class="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition">چوونەژوورەوە</button>
         </form>
-        <div class="text-center mt-4">
-            <a href="{{ url_for('index') }}" class="text-sm text-blue-600 hover:underline">گەڕانەوە بۆ پەڕەی سەرەکی</a>
+        <div class="text-center mt-4 space-x-2 space-x-reverse">
+            <a href="{{ url_for('index') }}" class="text-sm text-blue-600 hover:underline">سەرەکی</a> | 
+            <a href="{{ url_for('register') }}" class="text-sm text-emerald-600 hover:underline">تۆمارکردنی فرۆشگا</a>
         </div>
     </div>
 </body>
