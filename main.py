@@ -62,19 +62,16 @@ def dashboard():
         prices_db.append(price_data)
         return redirect(url_for('dashboard'))
 
-    # ----- شیکاری پێشکەوتوو بەپێی کەتەگۆری و کاڵا -----
-    analysis = {}  # structure: {category: {item_name: {"min": item, "max": item, "all": []}}}
+    # ----- شیکاری پێشکەوتوو بەپێی کەتەگۆری و کاڵا (دوو ئاست) -----
+    analysis = {}  # {category: {item_name: {"min": item, "max": item, "all": []}}}
     for item in prices_db:
         cat = item['category']
         iname = item['item_name']
-        # دڵنیابین لە بوونی پێکهاتەکان
         if cat not in analysis:
             analysis[cat] = {}
         if iname not in analysis[cat]:
             analysis[cat][iname] = {"min": item, "max": item, "all": []}
-        # زیادکردن بۆ لیستی هەموو نرخەکان
         analysis[cat][iname]["all"].append(item)
-        # نوێکردنەوەی کەمترین و زۆرترین
         if item['price'] < analysis[cat][iname]["min"]['price']:
             analysis[cat][iname]["min"] = item
         if item['price'] > analysis[cat][iname]["max"]['price']:
@@ -106,7 +103,7 @@ def dashboard():
     return render_template(
         'dashboard.html',
         prices=prices_db,
-        analysis=analysis,            # پێکهاتەی پێشکەوتوو
+        analysis=analysis,
         users=users_db,
         total_stores=total_stores,
         total_items=total_items,
