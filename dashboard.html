@@ -4,26 +4,6 @@
     <meta charset="UTF-8">
     <title>داشبۆردی بەڕێوەبەر</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        .card-link {
-            transition: transform 0.15s, box-shadow 0.15s;
-            cursor: pointer;
-        }
-        .card-link:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-        }
-        .card-link:active {
-            transform: scale(0.97);
-        }
-        html {
-            scroll-behavior: smooth;
-        }
-        .stat-card-blue { background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-color: #93c5fd; }
-        .stat-card-green { background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-color: #6ee7b7; }
-        .stat-card-emerald { background: linear-gradient(135deg, #d1fae5, #6ee7b7); border-color: #34d399; }
-        .stat-card-red { background: linear-gradient(135deg, #fee2e2, #fca5a5); border-color: #f87171; }
-    </style>
 </head>
 <body class="bg-gray-50 font-sans">
 
@@ -34,82 +14,38 @@
 
     <main class="container mx-auto my-8 p-4 space-y-8">
 
-        <!-- ========== کارتە ئامارییەکان ========== -->
+        <!-- ئامارەکان -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-            <!-- کارتی کۆی فرۆشگا -->
-            <a href="#stores" class="card-link block stat-card-blue border rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-blue-700 font-medium">کۆی فرۆشگاکان</p>
-                        <p class="text-3xl font-extrabold text-blue-900">{{ total_stores|default(0) }}</p>
-                    </div>
-                    <div class="bg-blue-200 p-3 rounded-full">
-                        <svg class="w-8 h-8 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    </div>
-                </div>
-                <p class="text-xs text-blue-600 mt-2">کرتە بکە بۆ بینینی هەموو فرۆشگاکان</p>
-            </a>
-
-            <!-- کارتی کۆی کاڵا -->
-            <a href="#analysis" class="card-link block stat-card-green border rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-green-700 font-medium">کۆی کاڵا جیاوازەکان</p>
-                        <p class="text-3xl font-extrabold text-green-900">{{ total_items|default(0) }}</p>
-                    </div>
-                    <div class="bg-green-200 p-3 rounded-full">
-                        <svg class="w-8 h-8 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                    </div>
-                </div>
-                <p class="text-xs text-green-600 mt-2">کرتە بکە بۆ بینینی شیکاری نرخەکان</p>
-            </a>
-
-            <!-- کارتی ئەرزانترین نرخ -->
-            <a href="#analysis" class="card-link block stat-card-emerald border rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-emerald-700 font-medium">ئەرزانترین نرخ</p>
-                        {% if overall_min %}
-                        <p class="text-2xl font-extrabold text-emerald-900">{{ overall_min.price }} دینار</p>
-                        <p class="text-xs text-gray-600 mt-1">کاڵا: {{ overall_min.item }} <br>لەلایەن: {{ overall_min.store }}</p>
-                        <p class="text-xs text-gray-500">کەتەگۆری: {{ overall_min.category }}</p>
-                        {% else %}
-                        <p class="text-sm text-gray-500">هیچ داتایەک نییە</p>
-                        {% endif %}
-                    </div>
-                    <div class="bg-emerald-200 p-3 rounded-full">
-                        <svg class="w-8 h-8 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                    </div>
-                </div>
-                <p class="text-xs text-emerald-600 mt-2">کرتە بکە بۆ بینینی خشتەی پێوانەکردن</p>
-            </a>
-
-            <!-- کارتی گرانترین نرخ -->
-            <a href="#analysis" class="card-link block stat-card-red border rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-red-700 font-medium">گرانترین نرخ</p>
-                        {% if overall_max %}
-                        <p class="text-2xl font-extrabold text-red-900">{{ overall_max.price }} دینار</p>
-                        <p class="text-xs text-gray-600 mt-1">کاڵا: {{ overall_max.item }} <br>لەلایەن: {{ overall_max.store }}</p>
-                        <p class="text-xs text-gray-500">کەتەگۆری: {{ overall_max.category }}</p>
-                        {% else %}
-                        <p class="text-sm text-gray-500">هیچ داتایەک نییە</p>
-                        {% endif %}
-                    </div>
-                    <div class="bg-red-200 p-3 rounded-full">
-                        <svg class="w-8 h-8 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
-                    </div>
-                </div>
-                <p class="text-xs text-red-600 mt-2">کرتە بکە بۆ بینینی خشتەی پێوانەکردن</p>
-            </a>
+            <div class="bg-blue-100 border border-blue-300 rounded-2xl p-6 shadow-sm">
+                <p class="text-sm text-blue-700 font-medium">کۆی فرۆشگاکان</p>
+                <p class="text-3xl font-extrabold text-blue-900 mt-2">{{ total_stores|default(0) }}</p>
+            </div>
+            <div class="bg-green-100 border border-green-300 rounded-2xl p-6 shadow-sm">
+                <p class="text-sm text-green-700 font-medium">کۆی کاڵا جیاوازەکان</p>
+                <p class="text-3xl font-extrabold text-green-900 mt-2">{{ total_items|default(0) }}</p>
+            </div>
+            <div class="bg-emerald-100 border border-emerald-300 rounded-2xl p-6 shadow-sm">
+                <p class="text-sm text-emerald-700 font-medium">ئەرزانترین نرخ</p>
+                {% if overall_min %}
+                <p class="text-xl font-extrabold text-emerald-900 mt-1">{{ overall_min.price }} دینار</p>
+                <p class="text-xs text-gray-600 mt-1">کاڵا: {{ overall_min.item }} ({{ overall_min.store }})</p>
+                {% else %}
+                <p class="text-sm text-gray-500 mt-2">هیچ داتایەک نییە</p>
+                {% endif %}
+            </div>
+            <div class="bg-red-100 border border-red-300 rounded-2xl p-6 shadow-sm">
+                <p class="text-sm text-red-700 font-medium">گرانترین نرخ</p>
+                {% if overall_max %}
+                <p class="text-xl font-extrabold text-red-900 mt-1">{{ overall_max.price }} دینار</p>
+                <p class="text-xs text-gray-600 mt-1">کاڵا: {{ overall_max.item }} ({{ overall_max.store }})</p>
+                {% else %}
+                <p class="text-sm text-gray-500 mt-2">هیچ داتایەک نییە</p>
+                {% endif %}
+            </div>
         </div>
-        <!-- ========== کۆتایی کارتەکان ========== -->
-
 
         <!-- بەشی زیادکردنی نرخ -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border" id="add-price">
+        <div class="bg-white p-6 rounded-xl shadow-sm border">
             <h2 class="text-xl font-bold mb-4 text-blue-900">زیادکردن و نوێکردنەوەی نرخی کاڵا</h2>
             <form method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <input type="text" name="store_name" placeholder="ناوی فرۆشگا / پێشانگا" required class="border p-2.5 rounded-lg outline-none">
@@ -125,9 +61,9 @@
             </form>
         </div>
 
-        <!-- بەشی شیکاری نرخەکان (کەمترین و زۆرترین لە ناو ڕکابەرەکاندا) -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border" id="analysis">
-            <h2 class="text-xl font-bold mb-4 text-blue-900">شیکاری ڕکابەرەکان (کەمترین و زۆرترین نرخ بۆ هەر کاڵایەک لە هەر کەتەگۆریەک)</h2>
+        <!-- شیکاری نرخەکان -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border">
+            <h2 class="text-xl font-bold mb-4 text-blue-900">شیکاری ڕکابەرەکان (کەمترین و زۆرترین نرخ)</h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-right border-collapse">
                     <thead>
@@ -146,11 +82,11 @@
                                 <td class="p-3 font-bold">{{ iname }}</td>
                                 <td class="p-3 text-emerald-600 font-semibold">
                                     {{ data.min.price }} دینار 
-                                    <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded mr-2">({{ data.min.store_name }})</span>
+                                    <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded mr-2">({{ data.min.shop_name }})</span>
                                 </td>
                                 <td class="p-3 text-red-600 font-semibold">
                                     {{ data.max.price }} دینار 
-                                    <span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded mr-2">({{ data.max.store_name }})</span>
+                                    <span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded mr-2">({{ data.max.shop_name }})</span>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -162,23 +98,6 @@
             </div>
         </div>
 
-        <!-- لیستی فرۆشگا تۆمارکراوەکان -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border" id="stores">
-            <h2 class="text-xl font-bold mb-4 text-blue-900">پێشانگا و کۆمپانیا تۆمارکراوەکان</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {% for user in users %}
-                <div class="border p-4 rounded-lg bg-gray-50">
-                    <h3 class="font-bold text-lg text-blue-900">{{ user.name }}</h3>
-                    <p class="text-sm text-gray-600 mt-1">پەیوەندی: {{ user.phone }}</p>
-                    <p class="text-sm text-gray-600">ئیمەیڵ: {{ user.email }}</p>
-                    <span class="inline-block mt-2 text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">{{ user.category }}</span>
-                </div>
-                {% else %}
-                <p class="text-gray-500">هیچ پێشانگایەک خۆی تۆمار نەکردووە.</p>
-                {% endfor %}
-            </div>
-        </div>
     </main>
-
 </body>
 </html>
